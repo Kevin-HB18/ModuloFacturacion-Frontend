@@ -1,0 +1,133 @@
+/* RegistroPersonas.css */
+
+.registro-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+  }
+  
+  .formulario-arriba {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .formulario-izquierda,
+  .formulario-derecha,
+  .formulario-abajo {
+    width: 48%;
+  }
+  
+  .formulario-izquierda {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 8px; /* Puntas redondas */
+  }
+  
+  .formulario-izquierda label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .formulario-izquierda input,
+  .formulario-izquierda select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    background-color: #eee; /* Fondo gris para los select */
+    border: 1px solid #ccc; /* Borde gris para los select */
+    border-radius: 4px; /* Puntas redondas para los select */
+  }
+  
+  .formulario-derecha {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 8px; /* Puntas redondas */
+  }
+  
+  .formulario-derecha .scroll-container {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+  }
+  
+  .formulario-derecha label,
+  .formulario-derecha button {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .formulario-derecha input,
+  .formulario-derecha select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    background-color: #eee; /* Fondo gris para los select */
+    border: 1px solid #ccc; /* Borde gris para los select */
+    border-radius: 4px; /* Puntas redondas para los select */
+  }
+  
+  .formulario-derecha button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0d47a1;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px; /* Puntas redondas para el botón */
+  }
+  
+  .formulario-derecha button:hover {
+    background-color: #082366;
+  }
+  
+  .contacto-titulo {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .contacto-lista {
+    margin-top: 15px;
+  }
+  
+  .formulario-abajo {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 8px; /* Puntas redondas */
+  }
+  
+  .formulario-abajo label,
+  .formulario-abajo select {
+    width: 100%;
+    display: block;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    background-color: #eee; /* Fondo gris para los select */
+    border: 1px solid #ccc; /* Borde gris para los select */
+    border-radius: 4px; /* Puntas redondas para los select */
+  }
+  
+  .formulario-abajo button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0d47a1;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px; /* Puntas redondas para el botón */
+  }
+  
+  .formulario-abajo button:hover {
+    background-color: #082366;
+  }
+  

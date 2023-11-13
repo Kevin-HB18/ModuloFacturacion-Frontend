@@ -13,10 +13,10 @@ function App() {
         <Header/>
         <div className='contenido'>
           <Routes>
-            <Route path="/" element={<Navigate to="/Login" />} /> {/* Ruta raíz */}
-            <Route path='/Login' element={<Login />} />
-            <Route path='/Registro' element={<Registrar />} />
-            <Route path='/Facturacion' element={<Facturar />} />
+            <Route path="/" element={<Navigate to="/login" />} /> {/* Ruta raíz */}
+            <Route path='/login' element={<Login />} />
+            <Route path='/registro' element={<Registrar />} />
+            <Route path='/facturacion' element={<Facturar />} />
             <Route path="*" element={<div className='cont-not-found'><h2>Error:404</h2><h2>página no encontrada</h2></div>} />
           </Routes>
         </div>
