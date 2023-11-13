@@ -49,10 +49,23 @@
     border-radius: 8px; /* Puntas redondas */
   }
   
-  .formulario-derecha .scroll-container {
-    max-height: 200px;
-    overflow-y: auto;
+  .contacto-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 10px; /* Espacio entre elementos */
+  }
+  
+  .contacto-item {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .formulario-abajo2{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* tres columnas */
+    gap: 10px; /* Espacio entre elementos */
   }
   
   .formulario-derecha label,
@@ -73,14 +86,16 @@
   }
   
   .formulario-derecha button {
-    width: 100%;
-    padding: 10px;
+    width: 50%;
+    margin: 20px auto; /* Añado margen automático horizontalmente y 20px arriba/abajo */
+    padding: 8px;
+    font-size: 14px;
     background-color: #0d47a1;
     color: #fff;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
-    border-radius: 4px; /* Puntas redondas para el botón */
+    border-radius: 4px;
   }
   
   .formulario-derecha button:hover {
@@ -106,6 +121,7 @@
   }
   
   .formulario-abajo label,
+  .formulario-abajo input,
   .formulario-abajo select {
     width: 100%;
     display: block;
@@ -116,18 +132,26 @@
     border-radius: 4px; /* Puntas redondas para los select */
   }
   
-  .formulario-abajo button {
-    width: 100%;
-    padding: 10px;
+
+  .direccion-titulo {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .registrar-btn {
+    width: 50%;
+    margin: 20px auto; /* Añado margen automático horizontalmente y 20px arriba/abajo */
+    padding: 8px;
+    font-size: 14px;
     background-color: #0d47a1;
     color: #fff;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
-    border-radius: 4px; /* Puntas redondas para el botón */
+    border-radius: 4px;
   }
-  
-  .formulario-abajo button:hover {
+  .registrar-btn:hover {
     background-color: #082366;
   }
   
