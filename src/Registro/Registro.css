@@ -23,6 +23,10 @@
     background-color: #fff;
     color: #333;
     border-radius: 8px; /* Puntas redondas */
+
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
   }
   
   .formulario-izquierda label {
@@ -118,6 +122,10 @@
     background-color: #fff;
     color: #333;
     border-radius: 8px; /* Puntas redondas */
+  }
+
+  .direccion-titulo{
+    text-align: center;
   }
   
   .formulario-abajo label,

@@ -1,0 +1,123 @@
+/* TuComponente.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+  }
+  
+  /* Sección de búsqueda de persona */
+  .persona-section {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 8px; /* Puntas redondas */
+  }
+  
+  /* Sección de búsqueda de productos y resultados */
+  .productos-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  /* Columna izquierda para búsqueda de productos */
+  .productos-izquierda {
+    flex-direction: column; /* Cambiado a columna para centrar verticalmente */
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 8px; /* Puntas redondas */
+    width: 48%;
+  }
+  
+  /* Columna derecha para resultados de productos */
+  .productos-derecha {
+    width: 48%;
+  }
+  
+  /* Sección de cantidad y estado */
+  .cantidad-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  /* Estilo común para labels, select, e input */
+  .select,
+  .input,
+  .button {
+    width: calc(100% - 16px); /* Ajuste para tener en cuenta padding y borde */
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: #eee; /* Fondo gris para los select */
+    border: 1px solid #ccc; /* Borde gris para los select */
+    border-radius: 4px; /* Puntas redondas para los select */
+    box-sizing: border-box; /* Para incluir padding y borde en el ancho total */
+  }
+  
+  /* Estilo específico para el botón de preregistro */
+  .preregistro-button {
+    width: 50%;
+    margin: 20px auto; /* Añado margen automático horizontalmente y 20px arriba/abajo */
+    padding: 8px;
+    font-size: 14px;
+    background-color: #0d47a1;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px;
+  }
+  
+  .preregistro-button:hover {
+    background-color: #082366;
+  }
+  
+  /* Estilo para los elementos en el scroll-container */
+  .product-item {
+    margin-bottom: 8px;
+  }
+  
+  /* Estilos para la lista de productos encontrados */
+  .scroll-container {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+  }
+  
+  .scroll-container div {
+    margin-bottom: 10px;
+  }
+  
+  .button-guardar {
+    width: 50%;
+    margin: 20px auto; /* Añado margen automático horizontalmente y 20px arriba/abajo */
+    padding: 8px;
+    font-size: 14px;
+    background-color: #0d47a1;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px;
+  }
+  
+  .button-guardar:hover {
+    background-color: #082366;
+  }
+  
+  .botones-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .button:hover {
+    background-color: #a6b7e2;
+  }
+  
