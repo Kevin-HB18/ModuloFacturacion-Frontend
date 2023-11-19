@@ -1,26 +1,50 @@
 // Login.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Login.css';
-
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 export function Login() {
+  const navigate=useNavigate();
+  const [role, setRole] = useState([]);
+  const [confirmationMessage, setConfirmationMessage] = useState(null);
+  const [formData, setFormData] = useState({
+    CODEMPLEADO: '',
+    CODCARGO: ''
+  });
 
-    const rolesList = [
-        "Director Comercial",
-        "Gerente de ventas",
-        "Representante de ventas",
-        "Vendedor",
-        "Gerente de compras",
-        "Auxiliar de compras"
-        ];
+    useEffect(() => {
+      const fetchData = async () => {
+          try {
+          const response = await axios.get("http://localhost:3001/api/obtenercargos");
+          setRole(response.data);
+          } catch (error) {
+          console.error("Error al obtener los tipos de cargo", error);
+          }
+      };
+  
+      fetchData(); // Llama a la función asincrónica para obtener los datos
+  
+      }, []);
 
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
-
-  const handleSubmit = (e) => {
+  const handleSubmit  = async (e) => {
     e.preventDefault();
-    // Aquí puedes manejar la lógica de inicio de sesión
+    try {
+      const response = await axios.post('http://localhost:3001/api/verificarlogin', 
+      { CODEMPLEADO: formData.CODEMPLEADO,CODCARGO: formData.CODCARGO });
+      console.log(response.data)
+      if (response.data.exists) {
+          setConfirmationMessage('');
+          navigate('/registro')
+          
+      } else {
+          // Si no existe, realizar el registro
+          setConfirmationMessage('No existe usuario o hay un error en los datos');
+      }
+      } catch (error) {
+      console.error('Error al verificar o enviar el registro:', error);
+      }
   };
 
   return (
@@ -28,31 +52,23 @@ export function Login() {
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-field">
           <label className="label">Contraseña:</label>
-          <input
-            className="input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <input className="input" type="password" value={formData.CODEMPLEADO} onChange={(event) =>setFormData({...formData, CODEMPLEADO: event.target.value,})}/>
         </div>
-        <div className="form-field">
+        <div className="form-field"> 
           <label className="label">Cargo:</label>
-          <select
-            className="select"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
+          <select className="select" value={formData.CODCARGO} onChange={(event) => setFormData({ ...formData,CODCARGO: event.target.value,})} required>
             <option value="">Seleccionar Cargo</option>
-            {rolesList.map((roleOption) => (
-              <option key={roleOption} value={roleOption}>
-                {roleOption}
+            {role.map((roleOption) => (
+              <option key={roleOption.CODCARGO} value={roleOption.CODCARGO}>
+                {roleOption.NOMCARGO}
               </option>
             ))}
-          </select>
+          </select>          
         </div>
         <button className="submit-button" type="submit">
           Iniciar Sesión
         </button>
+        {confirmationMessage && <div className="confirmation-message">{confirmationMessage}</div>}
       </form>
     </div>
   );
