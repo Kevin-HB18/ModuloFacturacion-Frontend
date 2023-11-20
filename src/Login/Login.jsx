@@ -4,6 +4,8 @@ import './Login.css';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
+export let quien_es = 0;
+
 
 export function Login() {
   const navigate=useNavigate();
@@ -37,6 +39,16 @@ export function Login() {
       if (response.data.exists) {
           setConfirmationMessage('');
           navigate('/registro')
+
+          if(formData.CODCARGO==='1' || formData.CODCARGO==='5'){
+            quien_es=1;
+          }else if(formData.CODCARGO==='2' || formData.CODCARGO==='3'){
+            quien_es=2;
+          }else if(formData.CODCARGO==='4'){
+            quien_es=3;
+          }else if(formData.CODCARGO==='6'){
+            quien_es=4;
+          }
           
       } else {
           // Si no existe, realizar el registro
@@ -52,7 +64,7 @@ export function Login() {
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-field">
           <label className="label">Contraseña:</label>
-          <input className="input" type="password" value={formData.CODEMPLEADO} onChange={(event) =>setFormData({...formData, CODEMPLEADO: event.target.value,})}/>
+          <input className="input" type="password" value={formData.CODEMPLEADO} onChange={(event) =>setFormData({...formData, CODEMPLEADO: event.target.value,})} required/>
         </div>
         <div className="form-field"> 
           <label className="label">Cargo:</label>

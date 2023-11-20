@@ -1,13 +1,28 @@
 // RegistroPersonas.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Registro.css";
+import axios from "axios";
+
 
 export function Registrar() {
-  const [documento, setDocumento] = useState("");
-  const [tipoDocumento, setTipoDocumento] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [tipoPersona, setTipoPersona] = useState("");
+
+  const [tipoDocumento, setTipoDocumento] = useState([]);
+  const [tipoPersona, setTipoPersona] = useState([]);
+
+  const [contactos, setContactos] = useState([
+    { tipo: "", valor: "" },
+    { tipo: "", valor: "" },
+    { tipo: "", valor: "" },
+    { tipo: "", valor: "" },
+  ]);
+
+  const [persona, setPersona] = useState({
+    IDTIPOPERSONA:'',
+    IDTIPODOC:'',
+    NDOCUMENTO:'',
+    NOMBRE:'',
+    APELLIDO:''
+  });
 
   const [tipoVia, setTipoVia] = useState("");
   const [numnomviaprinc, setnumnomviaprinc] = useState("");
@@ -26,12 +41,6 @@ export function Registrar() {
   const [tipoPredio, setTipoPredio] = useState("");
 
 
-  const [contactos, setContactos] = useState([
-    { tipo: "", valor: "" },
-    { tipo: "", valor: "" },
-    { tipo: "", valor: "" },
-    { tipo: "", valor: "" },
-  ]);
 
   const handleContactoChange = (index, key, value) => {
     const updatedContactos = [...contactos];
@@ -39,50 +48,70 @@ export function Registrar() {
     setContactos(updatedContactos);
   };
 
+  useEffect(() => {
+    const fetchDataDoc = async () => {
+        try {
+        const response = await axios.get("http://localhost:3001/api/obtenertipodoc");
+        setTipoDocumento(response.data);
+        } catch (error) {
+        console.error("Error al obtener los tipos de cargo", error);
+        }
+    };
+    const fetchDataPersona = async () => {
+      try {
+      const response = await axios.get("http://localhost:3001/api/obtenertipopersona");
+      setTipoPersona(response.data);
+      } catch (error) {
+      console.error("Error al obtener los tipos de cargo", error);
+      }
+    };
+
+    const fetchDataContacto = async () => {
+      try {
+      const response = await axios.get("http://localhost:3001/api/obtenertipocontact");
+      setContactos(response.data);
+      } catch (error) {
+      console.error("Error al obtener los tipos de cargo", error);
+      }
+    };
+
+    fetchDataDoc(); // Llama a la función asincrónica para obtener los datos
+    fetchDataPersona(); 
+    fetchDataContacto();
+
+    }, []);
+
   return (
     <div className="registro-container">
       <div className="formulario-arriba">
         <div className="formulario-izquierda">
           <label>Número de Documento:</label>
-          <input
-            type="text"
-            value={documento}
-            onChange={(e) => setDocumento(e.target.value)}
-          />
+          <input type="text" value={persona.NDOCUMENTO} onChange={(event) =>setPersona({...persona, NDOCUMENTO: event.target.value,})} required/>
 
           <label>Tipo de Documento:</label>
-          <select
-            value={tipoDocumento}
-            onChange={(e) => setTipoDocumento(e.target.value)}
-          >
-            <option value="">Seleccionar</option>
-            <option value="CC">CC</option>
-            <option value="TI">TI</option>
-            <option value="CE">CE</option>
+          <select  value={persona.IDTIPODOC} onChange={(event) =>setPersona({...persona, IDTIPODOC: event.target.value,})} required>
+          <option value="">Seleccionar Tipo Documento</option>
+            {tipoDocumento.map((docuOption) => (
+              <option key={docuOption.IDTIPODOC} value={docuOption.IDTIPODOC}>
+                {docuOption.DESCTIPODOC}
+              </option>
+            ))}
           </select>
 
           <label>Nombre:</label>
-          <input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-          />
+          <input type="text"  value={persona.NOMBRE} onChange={(event) =>setPersona({...persona, NOMBRE: event.target.value,})} required/>
 
           <label>Apellido:</label>
-          <input
-            type="text"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
-          />
+          <input type="text" value={persona.APELLIDO} onChange={(event) =>setPersona({...persona, APELLIDO: event.target.value,})} required/>
 
           <label>Tipo de Persona:</label>
-          <select
-            value={tipoPersona}
-            onChange={(e) => setTipoPersona(e.target.value)}
-          >
+          <select  value={persona.IDTIPOPERSONA} onChange={(event) =>setPersona({...persona, IDTIPOPERSONA: event.target.value,})} required>
             <option value="">Seleccionar</option>
-            <option value="cliente">Cliente</option>
-            <option value="proveedor">Proveedor</option>
+            {tipoPersona.map((docuOption) => (
+              <option key={docuOption.IDTIPOPERSONA} value={docuOption.IDTIPOPERSONA}>
+                {docuOption.DESCTIPOPERSONA}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -92,15 +121,13 @@ export function Registrar() {
           <div className="contacto-container">
             {contactos.map((contacto, index) => (
               <div key={index} className="contacto-item">
-                <select
-                  value={contacto.tipo}
-                  onChange={(e) =>
-                    handleContactoChange(index, "tipo", e.target.value)
-                  }
-                >
+                <select>
                   <option value="">TipoContacto</option>
-                  <option value="correo">Correo</option>
-                  <option value="celular">Celular</option>
+                  {contactos.map((docuOption) => (
+                    <option key={docuOption.IDTIPOCONTACTO} value={docuOption.IDTIPOCONTACTO}>
+                      {docuOption.DESCTIPOCONTACTO}
+                    </option>
+                  ))}
                 </select>
                 <input
                   type="text"

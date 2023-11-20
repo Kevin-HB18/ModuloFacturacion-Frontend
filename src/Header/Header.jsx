@@ -2,8 +2,11 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
+
 export function Header() {
     const location = useLocation();
+
+  
 
     if (location.pathname === '/login') {
         return null;
