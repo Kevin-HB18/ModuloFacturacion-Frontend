@@ -39,15 +39,27 @@ export function Registrar() {
   const [tipoPredio, setTipoPredio] = useState([]);
   const [tipocomplemento, setTipoComplemento] = useState([]); 
 
-
-  const [numnomviaprinc, setnumnomviaprinc] = useState("");
-  const [letrasviaprinc, setletrasviaprinc] = useState("");
-  const [prefijobis, setprefijobis] = useState("");
-  const [letrasprefijo, setletrasprefijo] = useState("");  
-  const [numviagen, setnumviagen] = useState("");
-  const [letrasviagen, setletrasviagen] = useState("");
-  const [sufijobis, setsufijobis] = useState("");
-  const [letrassufijo, setletrassufijo] = useState("");  
+  const [dir1, setDir1] = useState({ POSICION: 1, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir2, setDir2] = useState({ POSICION: 2, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir3, setDir3] = useState({ POSICION: 3, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir4, setDir4] = useState({ POSICION: 4, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir5, setDir5] = useState({ POSICION: 5, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir6, setDir6] = useState({ POSICION: 6, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir7, setDir7] = useState({ POSICION: 7, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir8, setDir8] = useState({ POSICION: 8, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir9, setDir9] = useState({ POSICION: 9, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir10, setDir10] = useState({ POSICION: 10, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir11, setDir11] = useState({ POSICION: 11, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir12, setDir12] = useState({ POSICION: 12, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir13, setDir13] = useState({ POSICION: 13, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir14, setDir14] = useState({ POSICION: 14, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir15, setDir15] = useState({ POSICION: 15, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir16, setDir16] = useState({ POSICION: 16, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir17, setDir17] = useState({ POSICION: 17, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir18, setDir18] = useState({ POSICION: 18, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir19, setDir19] = useState({ POSICION: 19, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir20, setDir20] = useState({ POSICION: 20, IDNOMEN: '', VALORDIRECC: '' });
+  const [dir21, setDir21] = useState({ POSICION: 21, IDNOMEN: '', VALORDIRECC: '' });
  
 
   useEffect(() => {
@@ -157,6 +169,8 @@ export function Registrar() {
 
     const handleSubmit  = async (e) => {
       e.preventDefault();
+      
+
     }
 
   return (
@@ -242,7 +256,7 @@ export function Registrar() {
             {/* ... (Tipo via) */}
 
             <label>Tipo de Vía</label>
-            <select required>
+            <select value={dir1.IDNOMEN} onChange={(event) =>setDir1({...dir1, IDNOMEN: event.target.value,})} required>
               <option value="">Seleccionar</option>
               {tipoVia.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
@@ -254,26 +268,26 @@ export function Registrar() {
             {/* ... (Numero o nombre via princ) */}
 
             <label># o nombre vía princial</label>
-            <input type="text" />
+            <input type="text" value={dir2.VALORDIRECC} onChange={(event) =>setDir2({...dir2, VALORDIRECC: event.target.value,})} />
             {/* ... (Letras asociadas a vía principal) */}
 
             <label>Letra/s vía principal</label>
-            <input type="text" />
+            <input type="text" value={dir3.VALORDIRECC} onChange={(event) =>setDir3({...dir3, VALORDIRECC: event.target.value,})}/>
             {/* ... (Prefijo(BIS)) */}
 
             <label>Prefijo(BIS)</label>
-            <select value={tipoVia} onChange={(e) => setTipoVia(e.target.value)}>
+            <select value={dir4.VALORDIRECC} onChange={(event) =>setDir4({...dir4, VALORDIRECC: event.target.value,})}>
               <option value="BIS">Si</option>
               <option value="">No</option>
             </select>
             {/* ... (Letras prefijo) */}
 
             <label>Letras/s prefijo</label>
-            <input type="text" />
+            <input type="text" value={dir5.VALORDIRECC} onChange={(event) =>setDir5({...dir5, VALORDIRECC: event.target.value,})} />
 
             {/* ... (Cuadrante) */}
             <label>Cuadrante:</label>
-            <select>
+            <select value={dir6.IDNOMEN} onChange={(event) =>setDir6({...dir6, IDNOMEN: event.target.value,})}>
               <option value="">Seleccionar</option>
               {tipocuadrante.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
@@ -284,31 +298,31 @@ export function Registrar() {
 
             {/* ... (Numero via gen) */}
             <label>Núm vía generadora</label>
-            <input type="text" />
+            <input type="text" value={dir7.VALORDIRECC} onChange={(event) =>setDir7({...dir7, VALORDIRECC: event.target.value,})} required/>
           </div>
 
           <div className="formulario-abajo">
             {/* ... (Letras via generadora) */}
             <label>Letra/s vía generadora</label>
-            <input type="text" />
+            <input type="text" value={dir8.VALORDIRECC} onChange={(event) =>setDir8({...dir8, VALORDIRECC: event.target.value,})}/>
 
             {/* ... (Sufjo(BIS)) */}
             <label>Sufijo(BIS)</label>
-            <select value={tipoVia} onChange={(e) => setTipoVia(e.target.value)}>
+            <select value={dir9.VALORDIRECC} onChange={(event) =>setDir9({...dir9, VALORDIRECC: event.target.value,})}>
               <option value="BIS">Si</option>
               <option value="">No</option>
             </select>
             {/* ... (Letras sufijo) */}
             <label>Letras/s sufijo</label>
-            <input type="text" />
+            <input type="text" value={dir10.VALORDIRECC} onChange={(event) =>setDir10({...dir10, VALORDIRECC: event.target.value,})}/>
 
             {/* ... (Num placa) */}
             <label>Núm placa</label>
-            <input type="text" />
+            <input type="text" value={dir11.VALORDIRECC} onChange={(event) =>setDir11({...dir11, VALORDIRECC: event.target.value,})} required/>
 
             {/* ... (Cuadrante) */}
             <label>Cuadrante</label>
-            <select >
+            <select value={dir12.VALORDIRECC} onChange={(event) =>setDir12({...dir12, VALORDIRECC: event.target.value,})} >
               <option value="">Seleccionar</option>
               <option value="norte">Norte</option>
               <option value="sur">Sur</option>
@@ -318,7 +332,7 @@ export function Registrar() {
 
             {/* ... (Barrio(BR)) */}
             <label>Tipo Barrio</label>
-            <select >
+            <select value={dir13.IDNOMEN} onChange={(event) =>setDir13({...dir13, IDNOMEN: event.target.value,})}>
               <option value="">Seleccionar</option>
               {tipobarrio.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
@@ -329,13 +343,13 @@ export function Registrar() {
 
             {/* ... (nom barrio) */}
             <label>Barrio</label>
-            <input type="text" />
+            <input type="text" value={dir14.VALORDIRECC} onChange={(event) =>setDir14({...dir14, VALORDIRECC: event.target.value,})} required/>
           </div>
 
           <div className="formulario-abajo">
             {/* ... (manzana) */}
             <label>Manzana:</label>
-            <select >
+            <select value={dir15.IDNOMEN} onChange={(event) =>setDir15({...dir15, IDNOMEN: event.target.value,})}>
               <option value="">Seleccionar</option>
               {tipomanzana.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
@@ -346,11 +360,11 @@ export function Registrar() {
 
             {/* ... (id manzana) */}
             <label>Id manzana</label>
-            <input type="text" />
+            <input type="text" value={dir16.VALORDIRECC} onChange={(event) =>setDir16({...dir16, VALORDIRECC: event.target.value,})}/>
 
             {/* ... (urbanización) */}
             <label>Tipo Urbanización</label>
-            <select >
+            <select value={dir17.IDNOMEN} onChange={(event) =>setDir17({...dir17, IDNOMEN: event.target.value,})}>
               <option value="">Seleccionar</option>
               {tipourbanizacion.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
@@ -361,11 +375,11 @@ export function Registrar() {
 
             {/* ... (nom urba) */}
             <label>Nom urbanización</label>
-            <input type="text" />
+            <input type="text" value={dir18.VALORDIRECC} onChange={(event) =>setDir18({...dir18, VALORDIRECC: event.target.value,})}/>
 
             {/* ... (Tipo predio) */}
             <label>Tipo de Predio:</label>
-            <select >
+            <select value={dir19.IDNOMEN} onChange={(event) =>setDir19({...dir19, IDNOMEN: event.target.value,})}>
               <option value="">Seleccionar</option>
               {tipoPredio.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
@@ -376,11 +390,11 @@ export function Registrar() {
 
             {/* ... (id predio) */}
             <label>Id predio</label>
-            <input type="text" />
+            <input type="text" value={dir20.VALORDIRECC} onChange={(event) =>setDir20({...dir20, VALORDIRECC: event.target.value,})} />
 
             {/* ... (Complemento) */}
             <label>Complemento:</label>
-            <select      >
+            <select value={dir21.IDNOMEN} onChange={(event) =>setDir21({...dir21, IDNOMEN: event.target.value,})} >
               <option value="">Seleccionar</option>
               {tipocomplemento.map((docuOption) => (
                 <option key={docuOption.IDNOMEN} value={docuOption.IDNOMEN}>
