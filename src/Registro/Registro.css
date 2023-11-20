@@ -148,6 +148,7 @@
   }
   
   .registrar-btn {
+    display: flex;
     width: 50%;
     margin: 20px auto; /* Añado margen automático horizontalmente y 20px arriba/abajo */
     padding: 8px;
@@ -158,6 +159,7 @@
     cursor: pointer;
     transition: background-color 0.3s;
     border-radius: 4px;
+    justify-content: center;
   }
   .registrar-btn:hover {
     background-color: #082366;
