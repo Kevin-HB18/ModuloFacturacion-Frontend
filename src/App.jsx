@@ -6,7 +6,13 @@ import { Header } from './Header/Header';
 import { Login } from './Login/Login';
 import { Registrar } from './Registro/Registro';
 
+let quien_es = 0;
+export const getGlobalValue = () => quien_es;
+export const setGlobalValue = (newValue) => {
+  quien_es = newValue;
+};
 function App() {
+  
   return (
     <div className="App">
       <Router>

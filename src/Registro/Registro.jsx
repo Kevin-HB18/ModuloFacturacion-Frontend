@@ -4,7 +4,9 @@ import "./Registro.css";
 import axios from "axios";
 
 
+import { getGlobalValue,setGlobalValue } from '../App';
 export function Registrar() {
+  console.log(getGlobalValue());
   const [confirmationMessage, setConfirmationMessage] = useState(null);
   const [totaldirecc, setTotalDirecc] = useState(0);  
 

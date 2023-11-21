@@ -4,8 +4,7 @@ import './Login.css';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
-export let quien_es = 0;
-
+import { getGlobalValue,setGlobalValue } from '../App';
 
 export function Login() {
   const navigate=useNavigate();
@@ -41,14 +40,15 @@ export function Login() {
           navigate('/registro')
 
           if(formData.CODCARGO==='1' || formData.CODCARGO==='5'){
-            quien_es=1;
+            setGlobalValue(1);
           }else if(formData.CODCARGO==='2' || formData.CODCARGO==='3'){
-            quien_es=2;
+            setGlobalValue(2);
           }else if(formData.CODCARGO==='4'){
-            quien_es=3;
+            setGlobalValue(3);
           }else if(formData.CODCARGO==='6'){
-            quien_es=4;
+            setGlobalValue(4);
           }
+          
           
       } else {
           // Si no existe, realizar el registro
