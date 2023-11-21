@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 import { getGlobalValue,setGlobalValue } from '../App';
+import { getEmpleado, setEmpleado } from '../App';
 
 export function Login() {
   const navigate=useNavigate();
@@ -48,8 +49,7 @@ export function Login() {
           }else if(formData.CODCARGO==='6'){
             setGlobalValue(4);
           }
-          
-          
+          setEmpleado(formData.CODCARGO);          
       } else {
           // Si no existe, realizar el registro
           setConfirmationMessage('No existe usuario o hay un error en los datos');

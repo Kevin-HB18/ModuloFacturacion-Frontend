@@ -11,6 +11,13 @@ export const getGlobalValue = () => quien_es;
 export const setGlobalValue = (newValue) => {
   quien_es = newValue;
 };
+
+let emp = '';
+export const getEmpleado = () => emp;
+export const setEmpleado = (newValue) => {
+  emp = newValue;
+};
+
 function App() {
   
   return (

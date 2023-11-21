@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Facturacion.css";
+import axios from "axios";
+
+import { getGlobalValue,setGlobalValue } from '../App';
+import { getEmpleado, setEmpleado } from '../App';
 
 export function Facturar() {
   // Estados para almacenar datos y resultados
-  const [tipoDocumento, setTipoDocumento] = useState("");
-  const [numeroDocumento, setNumeroDocumento] = useState("");
-  const [nombrePersona, setNombrePersona] = useState("");
-  const [apellidoPersona, setApellidoPersona] = useState("");
 
+  const [tipoDocumento, setTipoDocumento] = useState([]);
+  const [confirmationPersona, setConfirmationPersona] = useState('');
+  const [persona, setPersona] = useState({
+    IDTIPOPERSONA:'',
+    IDTIPODOC:'',
+    NDOCUMENTO:'',
+    NOMBRE:'',
+    APELLIDO:''
+  });
 
   const [codigoProducto, setCodigoProducto] = useState("");
   const [precioProducto, setPrecioProducto] = useState("");
@@ -15,18 +24,49 @@ export function Facturar() {
   const [cantidad, setCantidad] = useState("");
   const [estado, setEstado] = useState("");
   const [total, setTotal] = useState(0);
-  // Función para manejar la búsqueda de persona
-  const buscarPersona = () => {
-    // Lógica para buscar persona según tipoDocumento y numeroDocumento
-    // Actualizar el estado de nombrePersona con el resultado
-
-    const resultado = {
-        nombre: 'Juan ',
-        apellido: 'Pérez',
-      };
   
-      setNombrePersona(resultado.nombre);
-      setApellidoPersona(resultado.apellido);
+
+  const buscarPersona = async () => { 
+    if(getGlobalValue()===1 || getGlobalValue()===4){
+      const response = await axios.post('http://localhost:3001/api/buscarpersona', 
+      { IDTIPOPERSONA: 2, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });             
+      if(Array.isArray(response.data) && response.data.length > 0){ 
+        setConfirmationPersona('');          
+        setPersona(prevPersona => ({
+          ...prevPersona, 
+          IDTIPOPERSONA: 2,        
+          NOMBRE: response.data[0].NOMBRE, 
+          APELLIDO: response.data[0].APELLIDO
+        }));
+      }else{
+        setConfirmationPersona('No encontrado');
+        setPersona(prevPersona => ({
+          ...prevPersona,                   
+          NOMBRE: '', 
+          APELLIDO: ''
+        }));
+      }
+    }else if(getGlobalValue()===2 || getGlobalValue()===3){
+      const response = await axios.post('http://localhost:3001/api/buscarpersona', 
+      { IDTIPOPERSONA: 1, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });        
+      if(Array.isArray(response.data) && response.data.length > 0){
+        setConfirmationPersona('');
+        console.log(response.data)      
+        setPersona(prevPersona => ({
+          ...prevPersona, 
+          IDTIPOPERSONA: 1,        
+          NOMBRE: response.data[0].NOMBRE, 
+          APELLIDO: response.data[0].APELLIDO
+        }));
+      }else{
+        setConfirmationPersona('No encontrado');
+        setPersona(prevPersona => ({
+          ...prevPersona,                   
+          NOMBRE: '', 
+          APELLIDO: ''
+        }));
+      }
+    }      
   };
 
   // Función para manejar la búsqueda de productos
@@ -55,6 +95,23 @@ export function Facturar() {
     // Actualizar el estado de productosEncontrados con los datos simulados
     setProductosEncontrados(productosSimulados);
   };
+
+ 
+
+  
+  useEffect(() => {
+    const fetchDataDoc = async () => {
+      try {
+      const response = await axios.get("http://localhost:3001/api/obtenertipodoc");
+      setTipoDocumento(response.data);
+      } catch (error) {
+      console.error("Error al obtener los tipos de cargo", error);
+      }
+    };
+    fetchDataDoc(); 
+
+    
+  }, []);
  
 
   // Función para manejar la acción de totalizar
@@ -82,31 +139,31 @@ export function Facturar() {
       {/* Sección de búsqueda de persona */}
       <div className="persona-section">
         <label className="label">Tipo de Documento:</label>
-        <select
-          className="select"
-          value={tipoDocumento}
-          onChange={(e) => setTipoDocumento(e.target.value)}
-        >
-          {/* ... opciones del select */}
+        <select className="select" value={persona.IDTIPODOC} onChange={(event) =>setPersona({...persona, IDTIPODOC: event.target.value,})} required>
+          <option value="">Seleccionar Tipo Documento</option>
+            {tipoDocumento.map((docuOption) => (
+              <option key={docuOption.IDTIPODOC} value={docuOption.IDTIPODOC}>
+                {docuOption.DESCTIPODOC}
+              </option>
+            ))}
         </select>
 
         <label className="label">Número de Documento:</label>
-        <input
-          className="input"
-          type="text"
-          value={numeroDocumento}
-          onChange={(e) => setNumeroDocumento(e.target.value)}
-        />
+        <input className="input" type="text" value={persona.NDOCUMENTO} onChange={(event) =>setPersona({...persona, NDOCUMENTO: event.target.value,})} required/>
 
         <button className="button" onClick={buscarPersona}>
           Buscar Persona
         </button>
 
         {/* Mostrar el nombre y apellido de la persona */}
-        {nombrePersona && (
+        {persona.NDOCUMENTO && persona.APELLIDO ?(
           <div>
-            <div>{`Nombre: ${nombrePersona}`}</div>
-            <div>{`Apellido: ${apellidoPersona}`}</div>
+            <div>{`Nombre: ${persona.NOMBRE}`}</div>
+            <div>{`Apellido: ${persona.APELLIDO}`}</div>
+          </div>
+        ) : (
+          <div>
+            <div>{`Mensaje: ${confirmationPersona}`}</div>
           </div>
         )}
       </div>
