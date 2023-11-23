@@ -9,7 +9,12 @@ export function Facturar() {
   // Estados para almacenar datos y resultados
 
   const [tipoDocumento, setTipoDocumento] = useState([]);
+  const [tipoCatProducto, setTipoCatProducto] = useState([]);  
   const [confirmationPersona, setConfirmationPersona] = useState('');
+  const [confirmationProducto, setConfirmationProducto] = useState('');
+  const [confirmationEstado, setConfirmationEstado] = useState('');
+  const [validarBusquedaProducto, setValidarBusquedaProducto] =useState(false);
+
   const [persona, setPersona] = useState({
     IDTIPOPERSONA:'',
     IDTIPODOC:'',
@@ -18,12 +23,21 @@ export function Facturar() {
     APELLIDO:''
   });
 
-  const [codigoProducto, setCodigoProducto] = useState("");
-  const [precioProducto, setPrecioProducto] = useState("");
-  const [productosEncontrados, setProductosEncontrados] = useState([]);
-  const [cantidad, setCantidad] = useState("");
-  const [estado, setEstado] = useState("");
+  const [producto, setProducto] = useState({
+    REFPRODUCTO:'',
+    IDCATPRODUCTO:'',
+    NOMPRODUCTO:'',
+    PRECIO:'',
+    CANTIDAD:0
+  })
+
+  
+  const [productosEncontrados, setProductosEncontrados] = useState([]);  
   const [total, setTotal] = useState(0);
+
+  const agregarProducto = (nuevoProducto) => {
+    setProductosEncontrados((prevProductos) => prevProductos.concat(nuevoProducto));
+  };
   
 
   const buscarPersona = async () => { 
@@ -70,33 +84,27 @@ export function Facturar() {
   };
 
   // Función para manejar la búsqueda de productos
-  const buscarProductos = () => {
-    // Lógica para buscar productos según el códigoProducto
-    // Actualizar el estado de productosEncontrados con el resultado
-    const productosSimulados = [
-      { nombre: "Producto 1", precio: "$10" },
-      { nombre: "Producto 2", precio: "$20" },
-      { nombre: "Producto 3", precio: "$15" },
-      { nombre: "Producto 1", precio: "$10" },
-      { nombre: "Producto 2", precio: "$20" },
-      { nombre: "Producto 3", precio: "$15" },
-      { nombre: "Producto 1", precio: "$10" },
-      { nombre: "Producto 2", precio: "$20" },
-      { nombre: "Producto 3", precio: "$15" },
-      { nombre: "Producto 1", precio: "$10" },
-      { nombre: "Producto 2", precio: "$20" },
-      { nombre: "Producto 3", precio: "$15" },
-      { nombre: "Producto 1", precio: "$10" },
-      { nombre: "Producto 2", precio: "$20" },
-      { nombre: "Producto 3", precio: "$15" },
-      // Agrega más datos de prueba según sea necesario
-    ];
-
-    // Actualizar el estado de productosEncontrados con los datos simulados
-    setProductosEncontrados(productosSimulados);
+  const buscarProductos = async () => {
+    const response = await axios.post('http://localhost:3001/api/buscarproducto', 
+      { REFPRODUCTO: producto.REFPRODUCTO, IDCATPRODUCTO: producto.IDCATPRODUCTO});        
+      if(Array.isArray(response.data) && response.data.length > 0){
+        setConfirmationProducto('');
+        console.log(response.data)      
+        setProducto(prevProducto => ({
+          ...prevProducto, 
+          NOMPRODUCTO: response.data[0].NOMPRODUCTO,        
+          PRECIO: response.data[0].VALOR          
+        }));
+        setValidarBusquedaProducto(true);
+      }else{
+        setConfirmationProducto('Producto no encontrado');
+        setProducto(prevProducto => ({
+          ...prevProducto,                   
+          NOMPRODUCTO: '',        
+          PRECIO: ''    
+        }));
+      }
   };
-
- 
 
   
   useEffect(() => {
@@ -108,7 +116,16 @@ export function Facturar() {
       console.error("Error al obtener los tipos de cargo", error);
       }
     };
-    fetchDataDoc(); 
+    const fetchDataCatProducto = async () => {
+      try {
+      const response = await axios.get("http://localhost:3001/api/obtenercatproducto");
+      setTipoCatProducto(response.data);
+      } catch (error) {
+      console.error("Error al obtener los tipos de cargo", error);
+      }
+    };
+    fetchDataDoc();
+    fetchDataCatProducto(); 
 
     
   }, []);
@@ -118,10 +135,34 @@ export function Facturar() {
   const totalizar = () => {
     // Lógica para calcular el total (puedes reemplazar esto con tu lógica real)
     const totalCalculado = productosEncontrados.reduce(
-      (acc, producto) => acc + parseFloat(producto.precio.replace("$", "")),
+      (acc, producto) => acc + parseFloat(producto.PRECIO)*parseFloat(producto.CANTIDAD),
       0
     );
     setTotal(totalCalculado);
+  };
+
+  const preregistrar = async () => {
+    setConfirmationEstado('');   
+    if(producto.REFPRODUCTO!=='' && producto.IDCATPRODUCTO!=='' && producto.CANTIDAD!=='' && confirmationProducto!=='Producto no encontrado' && validarBusquedaProducto===true && producto.CANTIDAD>0){
+      setValidarBusquedaProducto(false);
+      if(getGlobalValue()===1 || getGlobalValue()===3){
+        //salen productos
+        const response = await axios.post('http://localhost:3001/api/buscarcantidad', 
+        { REFPRODUCTO: producto.REFPRODUCTO, IDCATPRODUCTO: producto.IDCATPRODUCTO}); 
+        if(response.data[0].CANTIDAD>=producto.CANTIDAD){
+          agregarProducto(producto);
+          setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
+        }else{
+          setConfirmationEstado(`Denegado: ${producto.CANTIDAD}`);
+        }
+      }if(getGlobalValue()===2 || getGlobalValue()===4){
+        //entran productos
+        agregarProducto(producto);
+        setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
+      }
+    }else{      
+      setConfirmationEstado('Campos vacios, producto no encontrado, no oprimió buscar producto o cantida negativa o nula');
+    }
   };
 
   // Función para manejar la acción de guardar
@@ -129,10 +170,8 @@ export function Facturar() {
     // Lógica para guardar (puedes implementar esto según tus necesidades)
   };
 
-  // Función para manejar el preregistro
-  const preregistrar = () => {
-    // Lógica para preregistrar con cantidad y estado
-  };
+  
+ 
 
   return (
     <div className="container">
@@ -171,45 +210,48 @@ export function Facturar() {
       {/* Sección de búsqueda de productos y resultados */}
       <div className="productos-section">
         <div className="productos-izquierda">
+
           <label className="label">Código de Producto:</label>
-          <input
-            className="input"
-            type="text"
-            value={codigoProducto}
-            onChange={(e) => setCodigoProducto(e.target.value)}
-          />
-          <label className="label">Precio del Producto:</label>
-          <input
-            className="input"
-            type="text"
-            value={precioProducto}
-            onChange={(e) => setPrecioProducto(e.target.value)}
-          />
+          <input className="input" type="text" value={producto.REFPRODUCTO} onChange={(event) =>setProducto({...producto, REFPRODUCTO: event.target.value,})} required/>
+
+          <label className="label">Categoria de Producto:</label>
+          <select className="select" value={producto.IDCATPRODUCTO} onChange={(event) =>setProducto({...producto, IDCATPRODUCTO: event.target.value,})} required>
+          <option value="">Seleccionar Tipo Documento</option>
+            {tipoCatProducto.map((docuOption) => (
+              <option key={docuOption.IDCATPRODUCTO} value={docuOption.IDCATPRODUCTO}>
+                {docuOption.DESCATPRODUCTO}
+              </option>
+            ))}
+        </select>
+
+          <label className="label">Nombre y precio del Producto:</label>
+          {/*Busqueda de producto*/}
+          {producto.NOMPRODUCTO && producto.PRECIO!==0 ?(
+            <div>
+              <div>{`Nombre: ${producto.NOMPRODUCTO}`}</div>
+              <div>{`Precio: ${producto.PRECIO}`}</div>
+            </div>
+          ) : (
+            <div>
+              <div>{`Mensaje: ${confirmationProducto}`}</div>
+            </div>
+          )}
+
           <button className="button" onClick={buscarProductos}>
-            Buscar Productos
+            Buscar Producto
           </button>
+
           <label className="label">Cantidad:</label>
-          <input
-            className="input"
-            type="text"
-            value={cantidad}
-            onChange={(e) => setCantidad(e.target.value)}
-          />
-          <label className="label">Estado:</label>
-          <input
-            className="input"
-            type="text"
-            value={estado}
-            onChange={(e) => setEstado(e.target.value)}
-          />
+          <input className="input" type="text" value={producto.CANTIDAD} onChange={(event) =>setProducto({...producto, CANTIDAD: event.target.value,})} required />
+                    
+          <button className="preregistro-button" onClick={preregistrar}>
+            Prerregistrar
+          </button>
 
           {/* Mostrar "Aceptado" o "No hay" según el estado */}
-          {cantidad && estado && (
-            <div>{estado === "aceptado" ? "Aceptado" : "No hay"}</div>
+          {confirmationEstado && (
+            <div>{`${confirmationEstado}`}</div>
           )}
-          <button className="preregistro-button" onClick={preregistrar}>
-            Preregistrar
-          </button>
         </div>
 
         <div className="productos-derecha">
@@ -217,7 +259,7 @@ export function Facturar() {
             {/* Mostrar la lista de productos encontrados */}
             {productosEncontrados.map((producto, index) => (
               <div key={index} className="product-item">
-                {producto.nombre} - {producto.precio}
+                {producto.NOMPRODUCTO} - ${producto.PRECIO} - Cant:{producto.CANTIDAD}
               </div>
             ))}
           </div>
