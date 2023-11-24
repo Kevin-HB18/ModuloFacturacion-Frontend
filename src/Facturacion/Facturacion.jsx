@@ -14,6 +14,10 @@ export function Facturar() {
   const [confirmationProducto, setConfirmationProducto] = useState('');
   const [confirmationEstado, setConfirmationEstado] = useState('');
   const [validarBusquedaProducto, setValidarBusquedaProducto] =useState(false);
+  const [factura, setFactura] = useState('');
+  const [confirmationFactura, setConfirmationFactura] = useState('');
+  const [cantidadFacturas, setCantidadFacturas] = useState(0);
+  const [confirmationGuardar, setConfirmationGuardar] = useState('');
 
   const [persona, setPersona] = useState({
     IDTIPOPERSONA:'',
@@ -24,6 +28,7 @@ export function Facturar() {
   });
 
   const [producto, setProducto] = useState({
+    ITEM:1,
     REFPRODUCTO:'',
     IDCATPRODUCTO:'',
     NOMPRODUCTO:'',
@@ -83,6 +88,28 @@ export function Facturar() {
     }      
   };
 
+
+  const buscarFactura = async () => { 
+    setConfirmationFactura('');
+    if(getGlobalValue()===1){
+      const response = await axios.post('http://localhost:3001/api/verificarFactura', 
+      { NFACTURA: factura, IDTIPOFAC: 'CO'});             
+      if (response.data.exists) {
+        setConfirmationFactura('ExisteFactura');
+      } else {
+        setConfirmationFactura('No ExisteFactura');            
+      }  
+    }else if(getGlobalValue()===2){
+      const response = await axios.post('http://localhost:3001/api/verificarFactura', 
+      { NFACTURA: factura, IDTIPOFAC: 'VE'});             
+      if (response.data.exists) {
+        setConfirmationFactura('ExisteFactura');
+      } else {
+        setConfirmationFactura('No ExisteFactura');            
+      }  
+    }      
+  };
+
   // Función para manejar la búsqueda de productos
   const buscarProductos = async () => {
     const response = await axios.post('http://localhost:3001/api/buscarproducto', 
@@ -139,12 +166,14 @@ export function Facturar() {
       0
     );
     setTotal(totalCalculado);
+    fetchDataCantFacturas();     
   };
 
   const preregistrar = async () => {
     setConfirmationEstado('');   
     if(producto.REFPRODUCTO!=='' && producto.IDCATPRODUCTO!=='' && producto.CANTIDAD!=='' && confirmationProducto!=='Producto no encontrado' && validarBusquedaProducto===true && producto.CANTIDAD>0){
       setValidarBusquedaProducto(false);
+      setProducto(prevState => ({ ...prevState, ITEM: prevState.ITEM + 1 }));
       if(getGlobalValue()===1 || getGlobalValue()===3){
         //salen productos
         const response = await axios.post('http://localhost:3001/api/buscarcantidad', 
@@ -160,14 +189,111 @@ export function Facturar() {
         agregarProducto(producto);
         setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
       }
+      
     }else{      
       setConfirmationEstado('Campos vacios, producto no encontrado, no oprimió buscar producto o cantida negativa o nula');
     }
   };
 
+  const fetchDataPushFactura = async (tipofac,tipofac_sup,nfac_sup) => {
+    try {
+      await axios.post('http://localhost:3001/api/insertarfactura', 
+      { IDTIPOFAC:tipofac, IDTIPOPERSONA: persona.IDTIPOPERSONA, IDTIPODOC: persona.IDTIPODOC, NDOCUMENTO: persona.NDOCUMENTO, IDTIPOFAC_SUP:tipofac_sup, NFACTURA_SUP:nfac_sup, CODEMPLEADO:getEmpleado(), TOTALFACTURA:total}); 
+    } catch (error) {
+      console.error("Error al obtener los tipos de cargo", error);
+    }
+  };
+
+  const fetchDataCantFacturas = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/obtenercantidadfacturas");
+      setCantidadFacturas(response.data + 1);
+      console.log(response.data);     
+    } catch (error) {
+      console.error("Error al obtener los tipos de cargo", error);
+    }
+  };
+
+  const fetchDataPushProductos = async (tipof) => {
+    productosEncontrados.forEach(async producto => {
+      setTimeout(async () => {
+        try {
+          const respuesta = await axios.post('http://localhost:3001/api/insertardetallefactura',
+          {NFACTURA: cantidadFacturas, IDTIPOFAC: tipof, ITEM: producto.ITEM, IDCATPRODUCTO: producto.IDCATPRODUCTO, REFPRODUCTO: producto.REFPRODUCTO, CANTIDAD: producto.CANTIDAD , PRECIO: parseFloat(producto.PRECIO)*parseFloat(producto.CANTIDAD)});
+          console.log(respuesta.data); // Maneja la respuesta si es necesario
+        } catch (error) {
+          console.error('Error al insertar productos:', error); // Maneja el error si ocurre alguno
+        }
+    });
+    }, 2000);
+  };
+
+  const fetchDataPushInventario = async (tipof,consecinv,sale) => {
+    productosEncontrados.forEach(async producto => {      
+      const existencias = await axios.post('http://localhost:3001/api/buscarexistenciaproducto',
+      {IDCATPRODUCTO: producto.IDCATPRODUCTO, REFPRODUCTO: producto.REFPRODUCTO });
+      console.log(existencias.data[0].EXISTENCIA);
+      setTimeout(async () => {
+        try {
+          const respuesta = await axios.post('http://localhost:3001/api/insertarinventario',
+          { IDTIPOFAC: tipof, 
+            NFACTURA:cantidadFacturas,
+            ITEM: producto.ITEM,
+            IDCATPRODUCTO:producto.IDCATPRODUCTO, 
+            REFPRODUCTO:producto.REFPRODUCTO,
+            CONSECINVEN_SUP:consecinv, 
+            SALEN:sale, 
+            ENTRAN:producto.CANTIDAD, 
+            EXISTENCIA:existencias.data[0].EXISTENCIA+producto.CANTIDAD});
+
+          console.log(respuesta.data); // Maneja la respuesta si es necesario
+        } catch (error) {
+          console.error('Error al insertar productos:', error); // Maneja el error si ocurre alguno
+        }
+      }, 2000);
+    });
+  };
+
+
   // Función para manejar la acción de guardar
-  const guardar = () => {
-    // Lógica para guardar (puedes implementar esto según tus necesidades)
+  const guardar = async () => { 
+    setConfirmationGuardar('');
+    console.log(cantidadFacturas);
+    if(getGlobalValue()===1){
+      
+    }
+    if(getGlobalValue()===2){
+
+    }
+    if(getGlobalValue()===3){
+
+    }
+    if(getGlobalValue()===4){
+      //hacer este  
+             
+     
+      
+     
+
+      fetchDataPushFactura('CO',null,null);     
+       
+        
+      setTimeout(() => {          
+        fetchDataPushProductos('CO');     
+      }, 6000); 
+
+      setTimeout(() => {          
+        fetchDataPushInventario('CO',null,null);     
+      }, 8000); 
+
+      setConfirmationGuardar('Productos comprados exitosamente');
+    }
+    setTimeout(() => {          
+      setProducto({...producto, ITEM: 1});
+    }, 10000); 
+   
+    
+    
   };
 
   
@@ -205,6 +331,24 @@ export function Facturar() {
             <div>{`Mensaje: ${confirmationPersona}`}</div>
           </div>
         )}
+
+          {/*bUSCAR FACTURA*/}
+         {(getGlobalValue()===1 || getGlobalValue()===2) && (
+            <div>
+              <label className="label">Número de Factura:</label>
+              <input className="input" type="text" value={factura} onChange={(event) =>setFactura(event.target.value)} required/>
+              
+              <button className="button" onClick={buscarFactura}>
+                Buscar Factura
+              </button>
+
+            {confirmationFactura && (
+              <div>{`${confirmationFactura}`}</div>
+            )}
+            </div>
+          )}
+
+        
       </div>
 
       {/* Sección de búsqueda de productos y resultados */}
@@ -259,7 +403,7 @@ export function Facturar() {
             {/* Mostrar la lista de productos encontrados */}
             {productosEncontrados.map((producto, index) => (
               <div key={index} className="product-item">
-                {producto.NOMPRODUCTO} - ${producto.PRECIO} - Cant:{producto.CANTIDAD}
+                ITEM:{producto.ITEM} - {producto.NOMPRODUCTO} - ${producto.PRECIO} - Cant:{producto.CANTIDAD}
               </div>
             ))}
           </div>
@@ -274,6 +418,9 @@ export function Facturar() {
             <button className="button-guardar" onClick={guardar}>
               Guardar
             </button>
+            {confirmationGuardar && (
+            <div>{`${confirmationGuardar}`}</div>
+            )}
           </div>
         </div>
       </div>

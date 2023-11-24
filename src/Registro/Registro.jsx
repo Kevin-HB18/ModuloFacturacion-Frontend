@@ -169,6 +169,8 @@ export function Registrar() {
     fetchDataTipoPredio();
     fetchDataTipoComplemento(); 
     
+    
+    
 
     }, []);
 
@@ -210,7 +212,7 @@ export function Registrar() {
       try {
         const response = await axios.get('http://localhost:3001/api/obtenerregistrosdireccion');       
         setTotalDirecc(response.data);
-        setTotalDirecc(totaldirecc+1);
+        console.log(response.data);        
       } catch (error) {
       console.error("Error al mandar contactos", error);
       }          
@@ -221,6 +223,7 @@ export function Registrar() {
       setConfirmationMessage('');
       try {               
         fetchDataPushPersona();
+        fetchDataObtainDirecc();   
 
         setTimeout(() => {          
           fetchDataPushContacto(0);          
@@ -233,11 +236,9 @@ export function Registrar() {
         }, 4000);
         setTimeout(() => {          
           fetchDataPushContacto(3);         
-        }, 4000);
-
-        setTimeout(() => {          
-          fetchDataObtainDirecc();        
-        }, 1000);        
+        }, 4000);               
+               
+       
         
 
         //---------insertar direccion-------------        
@@ -357,7 +358,7 @@ export function Registrar() {
         <div className="formulario-arriba">
           <div className="formulario-izquierda">
             <label>Número de Documento:</label>
-            <input type="text" value={persona.NDOCUMENTO} onChange={(event) =>setPersona({...persona, NDOCUMENTO: event.target.value,})} required/>
+            <input type="text" value={persona.NDOCUMENTO} onChange={(event) =>{setPersona({...persona, NDOCUMENTO: event.target.value,}); fetchDataObtainDirecc(); }} required/>
 
             <label>Tipo de Documento:</label>
             <select  value={persona.IDTIPODOC} onChange={(event) =>setPersona({...persona, IDTIPODOC: event.target.value,})} required>
@@ -395,6 +396,7 @@ export function Registrar() {
                 <select
                   value={JSON.stringify({ IDTIPOCONTACTO: contactoItem.IDTIPOCONTACTO, DESCTIPOCONTACTO: contactoItem.DESCTIPOCONTACTO })}
                   onChange={(event) => {
+                    if(event.target.value!==""){
                     const { IDTIPOCONTACTO, DESCTIPOCONTACTO } = JSON.parse(event.target.value);
                     const updatedContacto = [...contacto];
                     updatedContacto[index] = {
@@ -403,6 +405,7 @@ export function Registrar() {
                       DESCTIPOCONTACTO
                     };
                     setContacto(updatedContacto);
+                    }
                   }}
                 >
                   <option value="">TipoContacto</option>
