@@ -49,6 +49,7 @@ export function Facturar() {
 
   const buscarPersona = async () => { 
     setProductosEncontrados([]);
+    setProducto({...producto, ITEM: 1});
     setHabilitarDev(false);
     if(getGlobalValue()===1 || getGlobalValue()===4){
       const response = await axios.post('http://localhost:3001/api/buscarpersona', 
@@ -180,13 +181,14 @@ export function Facturar() {
     setConfirmationEstado('');   
     if(producto.REFPRODUCTO!=='' && producto.IDCATPRODUCTO!=='' && producto.CANTIDAD!=='' && confirmationProducto!=='Producto no encontrado' && validarBusquedaProducto===true && producto.CANTIDAD>0){
       setValidarBusquedaProducto(false);
-      setProducto(prevState => ({ ...prevState, ITEM: prevState.ITEM + 1 }));
+      
       if(getGlobalValue()===1 || getGlobalValue()===3){
         //salen productos
         const response = await axios.post('http://localhost:3001/api/buscarcantidad', 
         { REFPRODUCTO: producto.REFPRODUCTO, IDCATPRODUCTO: producto.IDCATPRODUCTO}); 
         console.log(response.data.CANTIDAD);
         if(response.data.CANTIDAD>=producto.CANTIDAD){
+          setProducto(prevState => ({ ...prevState, ITEM: prevState.ITEM + 1 }));
           agregarProducto(producto);
           setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
         }else{
@@ -194,6 +196,7 @@ export function Facturar() {
         }
       }if(getGlobalValue()===2 || getGlobalValue()===4){
         //entran productos
+        setProducto(prevState => ({ ...prevState, ITEM: prevState.ITEM + 1 }));
         agregarProducto(producto);
         setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
       }
