@@ -139,6 +139,9 @@ export function Facturar() {
       }
   };
 
+  window.onload = () => {
+    window.location.href = '/login'; // Reemplaza con tu ruta específica
+  };
   
   useEffect(() => {
     const fetchDataDoc = async () => {

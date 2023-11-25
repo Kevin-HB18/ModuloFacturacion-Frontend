@@ -122,6 +122,7 @@
     background-color: #fff;
     color: #333;
     border-radius: 8px; /* Puntas redondas */
+    justify-self: center;
   }
 
   .direccion-titulo{
@@ -163,5 +164,10 @@
   }
   .registrar-btn:hover {
     background-color: #082366;
+  }
+  
+  .Botones-registro {
+    display: flex; /* Mostrar los botones en línea */
+    gap: 10px; /* Espacio entre los botones */
   }
   
