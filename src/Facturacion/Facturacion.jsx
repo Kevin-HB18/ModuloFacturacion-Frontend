@@ -19,6 +19,7 @@ export function Facturar() {
   const [cantidadFacturas, setCantidadFacturas] = useState(0);
   const [confirmationGuardar, setConfirmationGuardar] = useState('');
   const [poderguardar, setPoderGuardar] = useState(false);
+ 
 
   const [persona, setPersona] = useState({
     IDTIPOPERSONA:'',
@@ -94,7 +95,7 @@ export function Facturar() {
     setConfirmationFactura('');
     if(getGlobalValue()===1){
       const response = await axios.post('http://localhost:3001/api/verificarFactura', 
-      { NFACTURA: factura, IDTIPOFAC: 'CO'});             
+      { NFACTURA: factura, IDTIPOFAC: 'CO', IDTIPODOC: persona.IDTIPODOC, NDOCUMENTO: persona.NDOCUMENTO});             
       if (response.data.exists) {
         setConfirmationFactura('ExisteFactura');
       } else {
@@ -102,7 +103,7 @@ export function Facturar() {
       }  
     }else if(getGlobalValue()===2){
       const response = await axios.post('http://localhost:3001/api/verificarFactura', 
-      { NFACTURA: factura, IDTIPOFAC: 'VE'});             
+      { NFACTURA: factura, IDTIPOFAC: 'VE', IDTIPODOC: persona.IDTIPODOC, NDOCUMENTO: persona.NDOCUMENTO});             
       if (response.data.exists) {
         setConfirmationFactura('ExisteFactura');
       } else {
@@ -290,10 +291,29 @@ export function Facturar() {
     console.log(cantidadFacturas);
     if(getGlobalValue()===1){
       //para devolver compras a proovedores(salen productos)
+      fetchDataPushFactura('DC','CO',factura);           
+        
+      setTimeout(() => {          
+        fetchDataPushProductos('DC');     
+      }, 6000); 
 
+      setTimeout(() => {          
+        fetchDataPushInventarioSale('DC',null);     
+        setConfirmationGuardar('Productos comprados devolvidos exitosamente');
+      }, 8000); 
     }
     if(getGlobalValue()===2){
       //Para devolver compras a clientes(entran productos)
+      fetchDataPushFactura('DV','VE',factura);           
+        
+      setTimeout(() => {          
+        fetchDataPushProductos('DV');     
+      }, 6000); 
+
+      setTimeout(() => {          
+        fetchDataPushInventarioSale('DV',null);     
+        setConfirmationGuardar('Productos vendidos devolvidos exitosamente');
+      }, 8000); 
 
     }
     if(getGlobalValue()===3){
