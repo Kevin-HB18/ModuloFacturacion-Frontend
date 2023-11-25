@@ -18,6 +18,7 @@ export function Facturar() {
   const [confirmationFactura, setConfirmationFactura] = useState('');
   const [cantidadFacturas, setCantidadFacturas] = useState(0);
   const [confirmationGuardar, setConfirmationGuardar] = useState('');
+  const [poderguardar, setPoderGuardar] = useState(false);
 
   const [persona, setPersona] = useState({
     IDTIPOPERSONA:'',
@@ -46,6 +47,7 @@ export function Facturar() {
   
 
   const buscarPersona = async () => { 
+    setProductosEncontrados([]);
     if(getGlobalValue()===1 || getGlobalValue()===4){
       const response = await axios.post('http://localhost:3001/api/buscarpersona', 
       { IDTIPOPERSONA: 2, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });             
@@ -87,7 +89,6 @@ export function Facturar() {
       }
     }      
   };
-
 
   const buscarFactura = async () => { 
     setConfirmationFactura('');
@@ -166,7 +167,9 @@ export function Facturar() {
       0
     );
     setTotal(totalCalculado);
-    fetchDataCantFacturas();     
+    fetchDataCantFacturas(); 
+    setConfirmationGuardar('');    
+    setPoderGuardar(true);
   };
 
   const preregistrar = async () => {
@@ -178,7 +181,8 @@ export function Facturar() {
         //salen productos
         const response = await axios.post('http://localhost:3001/api/buscarcantidad', 
         { REFPRODUCTO: producto.REFPRODUCTO, IDCATPRODUCTO: producto.IDCATPRODUCTO}); 
-        if(response.data[0].CANTIDAD>=producto.CANTIDAD){
+        console.log(response.data.CANTIDAD);
+        if(response.data.CANTIDAD>=producto.CANTIDAD){
           agregarProducto(producto);
           setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
         }else{
@@ -207,7 +211,7 @@ export function Facturar() {
   const fetchDataCantFacturas = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/obtenercantidadfacturas");
-      setCantidadFacturas(response.data + 1);
+      setCantidadFacturas(response.data);
       console.log(response.data);     
     } catch (error) {
       console.error("Error al obtener los tipos de cargo", error);
@@ -228,11 +232,11 @@ export function Facturar() {
     }, 2000);
   };
 
-  const fetchDataPushInventario = async (tipof,consecinv,sale) => {
+  const fetchDataPushInventarioEntra = async (tipof,consecinv) => {
     productosEncontrados.forEach(async producto => {      
       const existencias = await axios.post('http://localhost:3001/api/buscarexistenciaproducto',
       {IDCATPRODUCTO: producto.IDCATPRODUCTO, REFPRODUCTO: producto.REFPRODUCTO });
-      console.log(existencias.data[0].EXISTENCIA);
+      console.log(existencias.data.EXISTENCIA);
       setTimeout(async () => {
         try {
           const respuesta = await axios.post('http://localhost:3001/api/insertarinventario',
@@ -242,9 +246,35 @@ export function Facturar() {
             IDCATPRODUCTO:producto.IDCATPRODUCTO, 
             REFPRODUCTO:producto.REFPRODUCTO,
             CONSECINVEN_SUP:consecinv, 
-            SALEN:sale, 
+            SALEN:null, 
             ENTRAN:producto.CANTIDAD, 
-            EXISTENCIA:existencias.data[0].EXISTENCIA+producto.CANTIDAD});
+            EXISTENCIA:parseInt(existencias.data.EXISTENCIA)+parseInt(producto.CANTIDAD)});
+
+          console.log(respuesta.data); // Maneja la respuesta si es necesario
+        } catch (error) {
+          console.error('Error al insertar productos:', error); // Maneja el error si ocurre alguno
+        }
+      }, 2000);
+    });
+  };
+
+  const fetchDataPushInventarioSale = async (tipof,consecinv) => {
+    productosEncontrados.forEach(async producto => {      
+      const existencias = await axios.post('http://localhost:3001/api/buscarexistenciaproducto',
+      {IDCATPRODUCTO: producto.IDCATPRODUCTO, REFPRODUCTO: producto.REFPRODUCTO });
+      console.log(existencias.data.EXISTENCIA);
+      setTimeout(async () => {
+        try {
+          const respuesta = await axios.post('http://localhost:3001/api/insertarinventario',
+          { IDTIPOFAC: tipof, 
+            NFACTURA:cantidadFacturas,
+            ITEM: producto.ITEM,
+            IDCATPRODUCTO:producto.IDCATPRODUCTO, 
+            REFPRODUCTO:producto.REFPRODUCTO,
+            CONSECINVEN_SUP:consecinv, 
+            SALEN:producto.CANTIDAD, 
+            ENTRAN:null, 
+            EXISTENCIA:parseInt(existencias.data.EXISTENCIA)-parseInt(producto.CANTIDAD)});
 
           console.log(respuesta.data); // Maneja la respuesta si es necesario
         } catch (error) {
@@ -256,44 +286,50 @@ export function Facturar() {
 
 
   // Función para manejar la acción de guardar
-  const guardar = async () => { 
-    setConfirmationGuardar('');
+  const guardar = async () => {     
     console.log(cantidadFacturas);
     if(getGlobalValue()===1){
-      
+      //para devolver compras a proovedores(salen productos)
+
     }
     if(getGlobalValue()===2){
+      //Para devolver compras a clientes(entran productos)
 
     }
     if(getGlobalValue()===3){
+      //para hacer ventas a clientes (salen productos)
+      fetchDataPushFactura('VE',null,null);           
+        
+      setTimeout(() => {          
+        fetchDataPushProductos('VE');     
+      }, 6000); 
+
+      setTimeout(() => {          
+        fetchDataPushInventarioSale('VE',null);     
+        setConfirmationGuardar('Productos vendidos exitosamente');
+      }, 8000); 
 
     }
     if(getGlobalValue()===4){
-      //hacer este  
-             
+      //para hacer compras al proovedor(entran productos)
      
-      
-     
-
-      fetchDataPushFactura('CO',null,null);     
-       
+      fetchDataPushFactura('CO',null,null);           
         
       setTimeout(() => {          
         fetchDataPushProductos('CO');     
       }, 6000); 
 
       setTimeout(() => {          
-        fetchDataPushInventario('CO',null,null);     
+        fetchDataPushInventarioEntra('CO',null);     
+        setConfirmationGuardar('Productos comprados exitosamente');
       }, 8000); 
 
-      setConfirmationGuardar('Productos comprados exitosamente');
+      
     }
     setTimeout(() => {          
       setProducto({...producto, ITEM: 1});
-    }, 10000); 
-   
-    
-    
+    }, 10000);    
+    setPoderGuardar(false);
   };
 
   
