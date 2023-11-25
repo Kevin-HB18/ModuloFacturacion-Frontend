@@ -19,7 +19,7 @@ export function Facturar() {
   const [cantidadFacturas, setCantidadFacturas] = useState(0);
   const [confirmationGuardar, setConfirmationGuardar] = useState('');
   const [poderguardar, setPoderGuardar] = useState(false);
- 
+  const [habilitarDev, setHabilitarDev] = useState(false);
 
   const [persona, setPersona] = useState({
     IDTIPOPERSONA:'',
@@ -49,6 +49,7 @@ export function Facturar() {
 
   const buscarPersona = async () => { 
     setProductosEncontrados([]);
+    setHabilitarDev(false);
     if(getGlobalValue()===1 || getGlobalValue()===4){
       const response = await axios.post('http://localhost:3001/api/buscarpersona', 
       { IDTIPOPERSONA: 2, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });             
@@ -98,6 +99,7 @@ export function Facturar() {
       { NFACTURA: factura, IDTIPOFAC: 'CO', IDTIPODOC: persona.IDTIPODOC, NDOCUMENTO: persona.NDOCUMENTO});             
       if (response.data.exists) {
         setConfirmationFactura('ExisteFactura');
+        setHabilitarDev(true);
       } else {
         setConfirmationFactura('No ExisteFactura');            
       }  
@@ -106,6 +108,7 @@ export function Facturar() {
       { NFACTURA: factura, IDTIPOFAC: 'VE', IDTIPODOC: persona.IDTIPODOC, NDOCUMENTO: persona.NDOCUMENTO});             
       if (response.data.exists) {
         setConfirmationFactura('ExisteFactura');
+        setHabilitarDev(true);
       } else {
         setConfirmationFactura('No ExisteFactura');            
       }  
@@ -154,7 +157,7 @@ export function Facturar() {
       }
     };
     fetchDataDoc();
-    fetchDataCatProducto(); 
+    fetchDataCatProducto();    
 
     
   }, []);
@@ -408,6 +411,7 @@ export function Facturar() {
       </div>
 
       {/* Sección de búsqueda de productos y resultados */}
+      {((habilitarDev===true && (getGlobalValue()===1 || getGlobalValue()===2)) || (getGlobalValue()!==1 && getGlobalValue()!==2)) && (
       <div className="productos-section">
         <div className="productos-izquierda">
 
@@ -480,6 +484,7 @@ export function Facturar() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
