@@ -51,7 +51,7 @@ export function Facturar() {
   const [confirmationFactura, setConfirmationFactura] = useState('');
   const [cantidadFacturas, setCantidadFacturas] = useState(0);
   const [confirmationGuardar, setConfirmationGuardar] = useState('');
-  const [poderguardar, setPoderGuardar] = useState(false);
+  const [poderguardar, setPoderGuardar] = useState(true);
   const [habilitarDev, setHabilitarDev] = useState(false); //para habilitar los componentes que buscan el producto y envian a BD (solo para devoluciones)
   const [nombreEmpleado,setNombreEmpleado] = useState([]);   
   const [nombredocumento, setNombreDocumento] = useState('');
@@ -160,9 +160,9 @@ export function Facturar() {
     setProducto({...producto, ITEM: 1}); //reinicia el numero de items
     setHabilitarDev(false); //deshabilida toda la parte inferior (solo para devoluciones)
     fetchDataNomEmpleado(); //busca el nombre del empleado
+    console.log(nombreEmpleado);
     const numdoc=parseInt(persona.IDTIPODOC)-1;
     setNombreDocumento(tipoDocumento[numdoc].DESCTIPODOC); //trae la descripción del tipo de documento para el pdf    
-    
     if(getGlobalValue()===1 || getGlobalValue()===4){ //la factura será para un proovedor
       const response = await axios.post('http://localhost:3001/api/buscarpersona', 
       { IDTIPOPERSONA: 2, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });             
@@ -174,6 +174,7 @@ export function Facturar() {
           NOMBRE: response.data[0].NOMBRE, //modifica características de la persona a buscar
           APELLIDO: response.data[0].APELLIDO
         }));
+        setPoderGuardar(true);
       }else{
         setConfirmationPersona('No encontrado');
         setPersona(prevPersona => ({
@@ -194,6 +195,7 @@ export function Facturar() {
           NOMBRE: response.data[0].NOMBRE, //modifica características de la persona a buscar
           APELLIDO: response.data[0].APELLIDO
         }));
+        setPoderGuardar(true);
       }else{
         setConfirmationPersona('No encontrado');
         setPersona(prevPersona => ({
@@ -253,7 +255,8 @@ export function Facturar() {
   const fetchDataNomEmpleado = async () => {//busca el nombre del empleado
     try {
     const response = await axios.post("http://localhost:3001/api/buscarnombreempleado",{CODEMPLEADO: getEmpleado()});
-    setNombreEmpleado(response.data.result[0]);         
+    setNombreEmpleado(response.data[0]);        
+    console.log(response.data[0]);    
     } catch (error) {
     console.error("Error al obtener los empleados", error);
     }
@@ -283,7 +286,7 @@ export function Facturar() {
    
     fetchDataDoc();
     fetchDataCatProducto();   
-
+    console.log(getEmpleado());
     if (getGlobalValue() === 0) {
       // Redireccionar a la página de login si la variable no es igual a 0
       navigate('/login')
@@ -302,12 +305,13 @@ export function Facturar() {
     setTotal(totalCalculado);//modifica la variable total
     fetchDataCantFacturas(); //saber cantidad de facturas
     setConfirmationGuardar('');    
-    setPoderGuardar(true);
+    setPoderGuardar(false);
   };
 
   //Guarda los productos encontrados en el panel inferior derecho
   const preregistrar = async () => {
     setConfirmationEstado('');   
+    setPoderGuardar(true);
     if(producto.REFPRODUCTO!=='' && producto.IDCATPRODUCTO!=='' && producto.CANTIDAD!=='' && confirmationProducto!=='Producto no encontrado' && validarBusquedaProducto===true && producto.CANTIDAD>0){//validador para saber si puede prerregistrar o no
       setValidarBusquedaProducto(false); //ya validado el producto, el estado se pone en falso para futuros productos puedan ser validados
       
@@ -481,8 +485,7 @@ export function Facturar() {
     }
     setTimeout(() => {          
       setProducto({...producto, ITEM: 1});
-    }, 10000);    
-    setPoderGuardar(false);
+    }, 10000);        
   }; 
 
   return (
@@ -613,7 +616,7 @@ export function Facturar() {
 
             {/* Boton que descarga el pdf generado y que envia datos a BD */}
             <PDFDownloadLink document={<MyPDF />} fileName="Factura.pdf">
-              <button className="button-guardar" onClick={guardar}>
+              <button className="button-guardar" onClick={guardar} disabled={poderguardar}>
                 Guardar
               </button>
             </PDFDownloadLink>            
