@@ -1,18 +1,22 @@
-// RegistroPersonas.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; //elementos de react para manejo de estados
 import "./Registro.css";
-import axios from "axios";
+import axios from "axios"; //axios para enviar datos al backend
+import { useNavigate } from 'react-router-dom'; //para navegar a otras interfaces
 
+import { getGlobalValue } from '../App'; //valor de los permisos del empleado
 
-import { getGlobalValue,setGlobalValue } from '../App';
 export function Registrar() {
-  console.log(getGlobalValue());
+  
+  const navigate = useNavigate(); //para navegar a otras interfaces
+
+  //variables que se usarán en el registro
   const [confirmationMessage, setConfirmationMessage] = useState(null);
   const [totaldirecc, setTotalDirecc] = useState(0);  
 
   const [tipoDocumento, setTipoDocumento] = useState([]);
   const [tipoPersona, setTipoPersona] = useState([]);
 
+  //variable que almacena los 4 tipos de contacto
   const [tipocontacto, setTipoContacto] = useState([
     { tipo: "", valor: "" },
     { tipo: "", valor: "" },
@@ -20,6 +24,7 @@ export function Registrar() {
     { tipo: "", valor: "" },
   ]);
 
+  //variable que guarda los atributos de las personas
   const [persona, setPersona] = useState({
     IDTIPOPERSONA:'',
     IDTIPODOC:'',
@@ -28,6 +33,7 @@ export function Registrar() {
     APELLIDO:''
   });
 
+  //donde se guardan los 4 contactos disponibles
   const [contacto, setContacto] = useState([
     {IDTIPOCONTACTO:'', DESCTIPOCONTACTO:'', IDTIPOPERSONA:persona.IDTIPOPERSONA, IDTIPODOC:persona.IDTIPODOC, NDOCUMENTO:persona.NDOCUMENTO, DESCCONTACTO:''},
     {IDTIPOCONTACTO:'', DESCTIPOCONTACTO:'', IDTIPOPERSONA:persona.IDTIPOPERSONA, IDTIPODOC:persona.IDTIPODOC, NDOCUMENTO:persona.NDOCUMENTO, DESCCONTACTO:''},
@@ -35,6 +41,7 @@ export function Registrar() {
     {IDTIPOCONTACTO:'', DESCTIPOCONTACTO:'', IDTIPOPERSONA:persona.IDTIPOPERSONA, IDTIPODOC:persona.IDTIPODOC, NDOCUMENTO:persona.NDOCUMENTO, DESCCONTACTO:''}
   ]);
 
+  //variables para las direcciones
   const [tipoVia, setTipoVia] = useState([]);
   const [tipocuadrante, setTipoCuadrante] = useState([]);
   const [tipobarrio, setTipoBarrio] = useState([]);
@@ -68,32 +75,72 @@ export function Registrar() {
   const [dir20, setDir20] = useState({ POSICION: 20, IDNOMEN: null, VALORDIRECC: '' });
   const [dir21, setDir21] = useState({ POSICION: 21, IDNOMEN: '', VALORDIRECC: null });
 
+  //funcion que reinicia las variables al cambiar de tipo de registro
+  function reiniciar(){
+    //reinicio contactos
+    setContacto(prevContacto => {
+      return prevContacto.map(contacto => {        
+        return {
+          ...contacto,
+          DESCCONTACTO: ''
+        };
+      });
+    });
+
+    //reiniciar direcciones
+    setDir1({...dir1, IDNOMEN: ''})
+    setDir2({...dir2, VALORDIRECC: ''})
+    setDir3({...dir3, VALORDIRECC: ''})
+    setDir4({...dir4, VALORDIRECC: ''})
+    setDir5({...dir5, VALORDIRECC: ''})
+    setDir6({...dir6, IDNOMEN: ''})
+    setDir7({...dir7, VALORDIRECC: ''})
+    setDir8({...dir8, VALORDIRECC: ''})
+    setDir9({...dir9, VALORDIRECC: ''})
+    setDir10({...dir10, VALORDIRECC: ''})
+    setDir11({...dir11, VALORDIRECC: ''})
+    setDir12({...dir12, VALORDIRECC: ''})
+    setDir13({...dir13, IDNOMEN: ''})
+    setDir14({...dir14, VALORDIRECC: ''})
+    setDir15({...dir15, IDNOMEN: ''})
+    setDir16({...dir16, VALORDIRECC: ''})
+    setDir17({...dir17, IDNOMEN: ''})
+    setDir18({...dir18, VALORDIRECC: ''})
+    setDir19({...dir19, IDNOMEN: ''})
+    setDir20({...dir20, VALORDIRECC: ''})
+    setDir21({...dir21, IDNOMEN: ''})
+  }
+
   function handleRegistrar() {
     // Lógica para el botón "Registrar"
     setAddContacto(false);
     setAddDireccion(false);
-    console.log('Botón "Registrar" presionado');
+    setConfirmationMessage('');
+
+    //reiniciar variables
+      reiniciar();
   }
   
   function handleAgregarContacto() {
     // Lógica para el botón "Añadir Contacto"
     setAddContacto(true);
     setAddDireccion(false);
-    console.log('Botón "Añadir Contacto" presionado');
+    setConfirmationMessage('');
+    //reiniciar variables
+    reiniciar(); 
   }
   
   function handleAgregarDireccion() {
     // Lógica para el botón "Añadir Dirección"
     setAddContacto(false);
     setAddDireccion(true);
-    console.log('Botón "Añadir Dirección" presionado');
+    setConfirmationMessage('');
+    //reiniciar variables
+    reiniciar();  
   }
  
-  window.onload = () => {
-    window.location.href = '/login'; // Reemplaza con tu ruta específica
-  };
-
-  useEffect(() => {
+  useEffect(() => {//useEffect permite ejecutar código en ciertos momentos durante el ciclo de vida de un componente, como cuando se monta, se actualiza o se desmonta
+    //Busca los tipos de documento
     const fetchDataDoc = async () => {
         try {
         const response = await axios.get("http://localhost:3001/api/obtenertipodoc");
@@ -102,6 +149,7 @@ export function Registrar() {
         console.error("Error al obtener los tipos de cargo", error);
         }
     };
+    //busca los tipos de persona
     const fetchDataPersona = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipopersona");
@@ -110,7 +158,8 @@ export function Registrar() {
       console.error("Error al obtener los tipos de cargo", error);
       }
     };
-
+    
+    //busca los tipos de contacto
     const fetchDataContacto = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipocontact");
@@ -121,6 +170,8 @@ export function Registrar() {
     };
 
     //-------------------------------Nomenclaturas----------------------
+
+    //busca los tipos de via
     const fetchDataTipoVia = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipovia");
@@ -130,6 +181,7 @@ export function Registrar() {
       }
     };
 
+    //busca los tipos de cuadrante
     const fetchDataTipoCuadrante = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipocuadrante");
@@ -139,6 +191,7 @@ export function Registrar() {
       }
     };
 
+    //busca los tipos de barrio
     const fetchDataTipoBarrio = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipobarrio");
@@ -148,6 +201,7 @@ export function Registrar() {
       }
     };
 
+    //busca los tipos de urbanizacion
     const fetchDataTipoUrbanizacion = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipourbanizacion");
@@ -157,6 +211,7 @@ export function Registrar() {
       }
     };
 
+    //busca los tipos de manzana
     const fetchDataTipoManzana = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipomanzana");
@@ -166,6 +221,7 @@ export function Registrar() {
       }
     };
 
+    //busca los tipos de predio
     const fetchDataTipoPredio = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipopredio");
@@ -175,6 +231,7 @@ export function Registrar() {
       }
     };
 
+    //busca los tipos de complemento
     const fetchDataTipoComplemento = async () => {
       try {
       const response = await axios.get("http://localhost:3001/api/obtenertipocomplemento");
@@ -196,27 +253,41 @@ export function Registrar() {
     fetchDataTipoPredio();
     fetchDataTipoComplemento(); 
     
-    
-    
+    if (getGlobalValue() === 0) {
+      // Redireccionar a la página de login si la variable no es igual a 0
+      navigate('/login')
+    }    
 
-    }, []);
+    }, [navigate]);
 
+    //Envia datos de la persona a backend
     const fetchDataPushPersona = async () => {
       try {
         const response = await axios.post('http://localhost:3001/api/verificarRegistro', 
         { IDTIPOPERSONA: persona.IDTIPOPERSONA, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });       
-        if (response.data.exists) {
+        if (response.data.exists) {//si la persona existe
+          if(addcontacto===false && adddireccion===false){//segun sea el tipo de registro por hacer
             setConfirmationMessage('Ya existe un registro en la BD');
-        } else {
-            // Si no existe, realizar el registro
+          }else if(addcontacto===true && adddireccion===false){
+            setConfirmationMessage('Registro exitoso de contacto');
+          }else if(addcontacto===false && adddireccion===true){
+            setConfirmationMessage('Registro exitoso de direccion');
+          }            
+        } else if(addcontacto===false && adddireccion===false) {
+            // Si no existe la persona, realizar el registro
             setConfirmationMessage('Registro exitoso');
             await axios.post('http://localhost:3001/api/insertarPersona', persona);            
-        }  
+        }else if(addcontacto===true && adddireccion===false){
+          setConfirmationMessage('No existe un registro de persona');
+        }else if(addcontacto===false && adddireccion===true){
+          setConfirmationMessage('No existe un registro de persona');
+        }
       } catch (error) {
       console.error("Error al mandar personas", error);
       }          
     };
 
+    //Envia los contactos a Backend para ser procesados
     const fetchDataPushContacto = async (i) => {
       try {
         if(contacto[i].IDTIPOCONTACTO!=='' && contacto[i].DESCCONTACTO!=='')
@@ -226,6 +297,7 @@ export function Registrar() {
       }          
     };
 
+    //envia las direcciones al backend para ser procesados
     const fetchDataPushDireccion = async (posicion,idnomen,valordirecc) =>{
       try {
         if((idnomen!=='' && valordirecc===null) || (idnomen===null && valordirecc!==''))
@@ -235,6 +307,7 @@ export function Registrar() {
       }   
     };
 
+    //Obtiene la cantidad de registros que hay en la BD
     const fetchDataObtainDirecc = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/obtenerregistrosdireccion');       
@@ -245,13 +318,15 @@ export function Registrar() {
       }          
     };
   
+    //Funcion que ejecuta las funciones que envian datos al Backend
     const handleSubmit  = async (e) => {
       e.preventDefault();
-      setConfirmationMessage('');
+      
       try {               
         fetchDataPushPersona();
         fetchDataObtainDirecc();   
-
+       
+        //SetTimeout es para darle una espera a tal ejecución, puesto que hay datos que deben ingresar primero a la BD
         setTimeout(() => {          
           fetchDataPushContacto(0);          
         }, 4000);
@@ -263,10 +338,7 @@ export function Registrar() {
         }, 4000);
         setTimeout(() => {          
           fetchDataPushContacto(3);         
-        }, 4000);               
-               
-       
-        
+        }, 4000); 
 
         //---------insertar direccion-------------        
         setTimeout(() => {          
@@ -371,7 +443,7 @@ export function Registrar() {
           fetchDataPushDireccion(dir21.POSICION,dir21.IDNOMEN,dir21.VALORDIRECC);     
         }, 2000);        
         
-     
+      
 
 
         } catch (error) {
@@ -398,9 +470,12 @@ export function Registrar() {
       <form onSubmit={handleSubmit}>
         <div className="formulario-arriba">
           <div className="formulario-izquierda">
+
+            {/* Para digitar numero de documento*/}
             <label>Número de Documento:</label>
             <input type="text" value={persona.NDOCUMENTO} onChange={(event) =>{setPersona({...persona, NDOCUMENTO: event.target.value,}); fetchDataObtainDirecc(); }} required/>
 
+            {/*Escoger tipo de documento*/}
             <label>Tipo de Documento:</label>
             <select  value={persona.IDTIPODOC} onChange={(event) =>setPersona({...persona, IDTIPODOC: event.target.value,})} required>
             <option value="">Seleccionar Tipo Documento</option>
@@ -412,13 +487,17 @@ export function Registrar() {
             </select>
             {((addcontacto===false && adddireccion===false)) &&(
             <div>
+
+              {/*Digitar nombre*/}
               <label>Nombre:</label>
               <input type="text"  value={persona.NOMBRE} onChange={(event) =>setPersona({...persona, NOMBRE: event.target.value,})} required/>
 
+              {/*Digitar apellido*/}
               <label>Apellido:</label>
               <input type="text" value={persona.APELLIDO} onChange={(event) =>setPersona({...persona, APELLIDO: event.target.value,})} required/>
             </div>
             )}
+            {/*Escoger tipo de persona*/}
             <label>Tipo de Persona:</label>
             <select  value={persona.IDTIPOPERSONA} onChange={(event) =>setPersona({...persona, IDTIPOPERSONA: event.target.value,})} required>
               <option value="">Seleccionar</option>
@@ -429,6 +508,7 @@ export function Registrar() {
               ))}
             </select>
           </div>
+          {/* Se mostrará codigo segun si se quiere registrar una persona, solo contactos o solo direcciones*/}
           {((addcontacto===true && adddireccion===false) || (addcontacto===false && adddireccion===false)) &&(
           <div className="formulario-derecha">
             <div className="contacto-titulo">Contacto</div>
@@ -436,6 +516,7 @@ export function Registrar() {
             {/*----------------------------Contactos----------------------------*/}  
             {contacto.map((contactoItem, index) => (              
               <div key={index} className="contacto-item">
+                {/*Escoger tipo de contacto*/}
                 <select
                   value={JSON.stringify({ IDTIPOCONTACTO: contactoItem.IDTIPOCONTACTO, DESCTIPOCONTACTO: contactoItem.DESCTIPOCONTACTO })}
                   onChange={(event) => {
@@ -461,7 +542,8 @@ export function Registrar() {
                     </option>
                   ))}
                 </select>
-
+                
+                {/*Ingresa los valores de contacto*/}
                 <input type="text" value={contactoItem.valor} 
                   onChange={(e) => {
                     const updatedContacto = [...contacto]; // Haciendo una copia del estado actual
@@ -475,12 +557,14 @@ export function Registrar() {
               </div>
             ))}
 
-            {/*----------------------------------contactos-----------------------*/}
+            {/*----------------------------------contactos FIN-----------------------*/}
             </div>
           </div>)}
 
         </div>
-        {/*-------------------------------------DIRECCIONES------------------------- */}
+        {/*-------------------------------------DIRECCIONES INICIO------------------------- */}
+
+        {/* Se mostrará codigo segun si se quiere registrar una persona, solo contactos o solo direcciones*/}
         {((addcontacto===false && adddireccion===true) || (addcontacto===false && adddireccion===false)) && (
         <div>
           <div className="direccion-titulo">Direccion</div>
@@ -639,7 +723,10 @@ export function Registrar() {
           </div>
         </div>
         )}
+        {/* Boton que envia datos a Backend para ser procesados */}
         <button className="registrar-btn">Registrar</button>
+
+        {/* Boton de confirmacion de registro */}
         {confirmationMessage && <div className="confirmation-message">{confirmationMessage}</div>}
       </form>  
     </div>
