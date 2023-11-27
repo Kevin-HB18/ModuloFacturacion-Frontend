@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"; //importa elementos propios 
 import "./Facturacion.css"; //importa css
 import axios from "axios"; //axios para conectarse con el backend
 import { useNavigate } from 'react-router-dom'; //para poder navegar a otros links
-import { PDFDownloadLink, PDFViewer, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'; //para el manejo de pdf
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'; //para el manejo de pdf
 
 import { getGlobalValue } from '../App'; //variable global de permisos de empleado
 import { getEmpleado } from '../App'; //variable de codigo del empleado
@@ -105,9 +105,9 @@ export function Facturar() {
     }
     const getTipoPersona = () => {  //determina si la persona es cliente o proovedor
       if (persona.IDTIPOPERSONA === 1) {
-        return 'Cliente';
+        return 'CLIENTE';
       } else if (persona.IDTIPOPERSONA === 2) {
-        return 'Proovedor';
+        return 'PROOVEDOR';
       } else{
         return '';
       } 
@@ -143,7 +143,7 @@ export function Facturar() {
              const nombreCategoria = categoriaEncontrada ? categoriaEncontrada.DESCATPRODUCTO : 'No especificada';
             return (
             <Text key={producto.id} style={styles.content}>
-              {`${producto.ITEM}    Cat: ${nombreCategoria}    Ref: ${producto.REFPRODUCTO}    Nombre: ${producto.NOMPRODUCTO}    Cant: ${producto.CANTIDAD}    Precio: $ ${parseFloat(producto.PRECIO)*parseFloat(producto.CANTIDAD)}`}
+              {`${producto.ITEM}    Cat: ${nombreCategoria}    Ref: ${producto.REFPRODUCTO}    Nombre: ${producto.NOMPRODUCTO}    Cant: ${producto.CANTIDAD}    Precio/U: $ ${producto.PRECIO}   Precio: $ ${parseFloat(producto.PRECIO)*parseFloat(producto.CANTIDAD)}`}
             </Text>
             )
           })}
@@ -161,8 +161,10 @@ export function Facturar() {
     setHabilitarDev(false); //deshabilida toda la parte inferior (solo para devoluciones)
     fetchDataNomEmpleado(); //busca el nombre del empleado
     console.log(nombreEmpleado);
-    const numdoc=parseInt(persona.IDTIPODOC)-1;
-    setNombreDocumento(tipoDocumento[numdoc].DESCTIPODOC); //trae la descripción del tipo de documento para el pdf    
+    if(persona.IDTIPODOC!==''){
+      const numdoc=parseInt(persona.IDTIPODOC)-1;
+      setNombreDocumento(tipoDocumento[numdoc].DESCTIPODOC); //trae la descripción del tipo de documento para el pdf  
+    }  
     if(getGlobalValue()===1 || getGlobalValue()===4){ //la factura será para un proovedor
       const response = await axios.post('http://localhost:3001/api/buscarpersona', 
       { IDTIPOPERSONA: 2, IDTIPODOC: persona.IDTIPODOC ,NDOCUMENTO: persona.NDOCUMENTO });             
@@ -323,7 +325,7 @@ export function Facturar() {
           agregarProducto(producto);
           setConfirmationEstado(`Aceptado: ${producto.CANTIDAD}`);
         }else{
-          setConfirmationEstado(`Denegado: ${producto.CANTIDAD}`);
+          setConfirmationEstado(`Denegado: ${producto.CANTIDAD}, solo hay ${response.data.CANTIDAD}`);
         }
       }if(getGlobalValue()===2 || getGlobalValue()===4){ //productos que van de entrada     
         setProducto(prevState => ({ ...prevState, ITEM: prevState.ITEM + 1 }));
