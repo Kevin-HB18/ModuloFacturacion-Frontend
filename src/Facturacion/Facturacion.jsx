@@ -337,6 +337,11 @@ export function Facturar() {
     }
   };
 
+  const cancelar = () =>{
+    setProductosEncontrados([]); //reinicia el panel inferior derecho
+    setProducto({...producto, ITEM: 1}); //reinicia el numero de items
+  }
+
   //Envia a procesar en backend para guardar los datos en tabla FACTURA
   const fetchDataPushFactura = async (tipofac,tipofac_sup,nfac_sup) => {
     try {
@@ -588,6 +593,9 @@ export function Facturar() {
           {/* Boton para prerregistar el producto en panel inferior derecho */}
           <button className="preregistro-button" onClick={preregistrar}>
             Prerregistrar
+          </button>
+          <button className="preregistro-button" onClick={cancelar}>
+            Cancelar
           </button>
 
           {/* Mostrar "Aceptado" o "No hay" según el estado */}

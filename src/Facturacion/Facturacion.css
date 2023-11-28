@@ -60,8 +60,8 @@
   
   /* Estilo específico para el botón de preregistro */
   .preregistro-button {
-    width: 50%;
-    margin: 20px auto; /* Añado margen automático horizontalmente y 20px arriba/abajo */
+    width: 46%;
+    margin: 5px; /* Añado margen automático horizontalmente y 20px arriba/abajo */
     padding: 8px;
     font-size: 14px;
     background-color: #0d47a1;
