@@ -45,7 +45,7 @@ Se genera un pdf con los elementos comprados y demás datos. En caso de ser una 
 
 
 ## Link del backend: 
-[Backend](https://github.com/Kevin-HB18/ModuloRegistroPersonas-backend) realizado con Node.js y Express.js usando una base de datos Oracle.
+[Backend](https://github.com/Kevin-HB18/ModuloFacturacion-Backend) realizado con Node.js y Express.js usando una base de datos Oracle.
 
 
 # Getting Started with Create React App
